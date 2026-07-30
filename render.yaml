@@ -24,4 +24,4 @@ services:
           name: msme-ml-service
           envVarKey: RENDER_EXTERNAL_URL
       - key: FRONTEND_URL
-        value: "https://your-vercel-app-url.vercel.app" # User needs to update this later in dashboard
+        value: "https://agrismart-zeta.vercel.app"
