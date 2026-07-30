@@ -307,10 +307,10 @@ export default memo(function MapSelector({
                                                     <p style={{ fontSize: 11, fontWeight: 700, color: '#1e293b', margin: '0 0 3px 0' }}>
                                                         {s.sensorName || 'Unnamed Sensor'}
                                                     </p>
-                                                    {s.firebaseNodeId && <p style={{ fontSize: 9, color: '#94a3b8', margin: '0 0 4px 0' }}>Node: {s.firebaseNodeId}</p>}
+                                                    {s.sensorNodeId && <p style={{ fontSize: 9, color: '#94a3b8', margin: '0 0 4px 0' }}>Node: {s.sensorNodeId}</p>}
                                                     {(() => {
-                                                        const r = s.firebaseNodeId ? sensorReadings[s.firebaseNodeId] : null;
-                                                        if (!r) return s.firebaseNodeId ? <p style={{ fontSize: 10, color: '#94a3b8', fontStyle: 'italic', margin: '2px 0' }}>Waiting for data...</p> : null;
+                                                        const r = s.sensorNodeId ? sensorReadings[s.sensorNodeId] : null;
+                                                        if (!r) return s.sensorNodeId ? <p style={{ fontSize: 10, color: '#94a3b8', fontStyle: 'italic', margin: '2px 0' }}>Waiting for data...</p> : null;
                                                         return (
                                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
                                                                 {r.temperature != null && <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 99, background: '#fff7ed', color: '#c2410c' }}>🌡 {r.temperature}°C</span>}

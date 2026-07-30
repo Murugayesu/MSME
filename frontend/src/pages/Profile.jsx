@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 import { User, MapPin, Scale, Sprout, Save, Edit2, LogOut, Loader2, Mail, Phone, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function Profile() {
@@ -32,10 +31,14 @@ export default function Profile() {
 
     const fetchProfile = async () => {
         try {
-            const docRef = doc(db, 'users', currentUser.uid);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
+            const token = await currentUser.getIdToken();
+            const response = await fetch('http://localhost:8000/api/profile/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
                 setProfileData({
                     username: data.username || '',
                     farmLocation: data.farmLocation || data.farm_location || '',
@@ -46,6 +49,8 @@ export default function Profile() {
                     phoneNumber: data.phoneNumber || data.phone_number || '',
                     experience: data.experience || ''
                 });
+            } else {
+                throw new Error("Failed to fetch profile");
             }
         } catch (error) {
             console.error("Error fetching profile:", error);
@@ -59,20 +64,30 @@ export default function Profile() {
         e.preventDefault();
         setSaving(true);
         try {
-            const docRef = doc(db, 'users', currentUser.uid);
-            await setDoc(docRef, {
-                username: profileData.username,
-                email: currentUser.email,
-                farmLocation: profileData.farmLocation,
-                farmSize: profileData.farmSize,
-                mainCrops: profileData.mainCrops,
-                phoneNumber: profileData.phoneNumber,
-                experience: profileData.experience,
-                updatedAt: new Date()
-            }, { merge: true });
+            const token = await currentUser.getIdToken();
+            const response = await fetch('http://localhost:8000/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    username: profileData.username,
+                    email: currentUser.email,
+                    farm_location: profileData.farmLocation,
+                    farm_size: profileData.farmSize,
+                    main_crops: profileData.mainCrops,
+                    phone_number: profileData.phoneNumber,
+                    experience: profileData.experience
+                })
+            });
 
-            setIsEditing(false);
-            showToast('success', 'Profile saved successfully!');
+            if (response.ok) {
+                setIsEditing(false);
+                showToast('success', 'Profile saved successfully!');
+            } else {
+                throw new Error("Failed to save profile");
+            }
         } catch (error) {
             console.error("Error updating profile:", error);
             showToast('error', 'Failed to save profile. Please try again.');

@@ -8,7 +8,6 @@ import tempfile
 import shutil
 
 from auth import get_current_user
-from firebase_admin import firestore
 import datetime
 from video_utils import extract_frames, parse_srt, match_frames_to_gps
 
@@ -61,14 +60,6 @@ def save_profiles(profiles):
     except Exception as e:
         print(f"Error saving profiles: {e}")
 
-# Handle Firestore initialization separately for safety
-try:
-    db = firestore.client()
-    print("Firestore client initialized successfully.")
-except Exception as e:
-    print(f"Warning: Firestore initialization failed ({e}). Using local storage fallback.")
-    db = None
-
 FARMS_FILE = "farms.json"
 
 def load_farms():
@@ -102,16 +93,7 @@ def health_check():
 @app.get("/api/profile/me")
 def get_profile(user: dict = Depends(get_current_user)):
     uid = user.get("uid")
-    
-    # 1. Try Firestore
-    if db:
-        try:
-            doc_ref = db.collection("profiles").document(uid)
-            doc = doc_ref.get()
-            if doc.exists:
-                return doc.to_dict()
-        except Exception as e:
-            print(f"Firestore profile fetch failed: {e}")
+
 
     # 2. Try Local storage
     if uid in user_profiles:
@@ -142,14 +124,6 @@ def update_profile(profile: UserProfile, user: dict = Depends(get_current_user))
     # 1. Save to local storage
     user_profiles[uid] = profile_data
     save_profiles(user_profiles)
-    
-    # 2. Save to Firestore
-    if db:
-        try:
-            db.collection("profiles").document(uid).set(profile_data)
-            print(f"Profile for user {uid} saved to Firestore")
-        except Exception as e:
-            print(f"Firestore profile save failed: {e}")
             
     print(f"Updating profile for user {uid}: {profile_data}")
     return {"status": "success", "message": "Profile updated successfully"}
@@ -169,14 +143,6 @@ def save_area(area_data: dict, user: dict = Depends(get_current_user)):
         "sensors": area_data.get("sensors", []),
         "created_at": timestamp
     }
-
-    # 1. Try to save to Firestore
-    if db:
-        try:
-            db.collection("farms").add(full_data)
-            print(f"Farm '{farm_name}' saved to Firestore for user {uid}")
-        except Exception as e:
-            print(f"Firestore save failed for farm '{farm_name}': {e}. Falling back to local.")
     
     # 2. Always save to local file as backup in dev
     farms_local.append(full_data)
@@ -194,19 +160,6 @@ def save_area(area_data: dict, user: dict = Depends(get_current_user)):
 def get_farms(user: dict = Depends(get_current_user)):
     uid = user.get("uid")
     user_farms = []
-    
-    # 1. Try Firestore
-    if db:
-        try:
-            docs = db.collection("farms").where("uid", "==", uid).stream()
-            for doc in docs:
-                f = doc.to_dict()
-                f["id"] = doc.id
-                user_farms.append(f)
-            if user_farms:
-                return user_farms
-        except Exception as e:
-            print(f"Firestore fetch failed: {e}")
 
     # 2. Fallback to local
     local_farms = [f for f in farms_local if f.get("uid") == uid]
@@ -219,18 +172,6 @@ def get_farms(user: dict = Depends(get_current_user)):
 def delete_farm(farm_id: str, user: dict = Depends(get_current_user)):
     uid = user.get("uid")
     deleted = False
-
-    # 1. Try Firestore
-    if db:
-        try:
-            doc_ref = db.collection("farms").document(farm_id)
-            doc = doc_ref.get()
-            if doc.exists and doc.to_dict().get("uid") == uid:
-                doc_ref.delete()
-                deleted = True
-                print(f"Farm {farm_id} deleted from Firestore for user {uid}")
-        except Exception as e:
-            print(f"Firestore delete failed: {e}")
 
     # 2. Try local fallback (match by id field or by list index)
     global farms_local
@@ -262,18 +203,6 @@ def update_farm(farm_id: str, update_data: dict, user: dict = Depends(get_curren
     }
     # Strip None values
     updated_fields = {k: v for k, v in updated_fields.items() if v is not None}
-
-    # 1. Try Firestore
-    if db:
-        try:
-            doc_ref = db.collection("farms").document(farm_id)
-            doc = doc_ref.get()
-            if doc.exists and doc.to_dict().get("uid") == uid:
-                doc_ref.update(updated_fields)
-                updated = True
-                print(f"Farm {farm_id} updated in Firestore for user {uid}")
-        except Exception as e:
-            print(f"Firestore update failed: {e}")
 
     # 2. Try local fallback
     global farms_local

@@ -2,7 +2,6 @@ fastapi
 uvicorn
 gunicorn
 python-multipart
-firebase-admin
 flask
 flask-cors
 numpy

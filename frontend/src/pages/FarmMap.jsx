@@ -75,20 +75,20 @@ export default function FarmMap() {
     const [editingSensorId, setEditingSensorId] = useState(null);   // null = add mode, string = editing
     const [editingSensorFarmId, setEditingSensorFarmId] = useState(null);
     const [sensorFormData, setSensorFormData] = useState({
-        sensorName: '', firebaseNodeId: '', installationDate: '', notes: ''
+        sensorName: '', sensorNodeId: '', installationDate: '', notes: ''
     });
 
-    // --- Live sensor readings from Firebase RTDB ---
-    const allFirebaseNodeIds = useMemo(() => {
+    // --- Live sensor readings ---
+    const allSensorNodeIds = useMemo(() => {
         const ids = [];
         savedFarms.forEach(farm => {
             (farm.sensors || []).forEach(s => {
-                if (s.firebaseNodeId) ids.push(s.firebaseNodeId);
+                if (s.sensorNodeId) ids.push(s.sensorNodeId);
             });
         });
         return ids;
     }, [savedFarms]);
-    const { readings: sensorReadings } = useSensorReadings(allFirebaseNodeIds);
+    const { readings: sensorReadings } = useSensorReadings(allSensorNodeIds);
 
     useEffect(() => {
         if (currentUser) {
@@ -153,7 +153,7 @@ export default function FarmMap() {
         setSensorFormFarmId(null);
         setEditingSensorId(null);
         setEditingSensorFarmId(null);
-        setSensorFormData({ sensorName: '', firebaseNodeId: '', installationDate: '', notes: '' });
+        setSensorFormData({ sensorName: '', sensorNodeId: '', installationDate: '', notes: '' });
     }, []);
 
     const openEditSensor = useCallback((farmId, sensor) => {
@@ -162,7 +162,7 @@ export default function FarmMap() {
         setSensorFormFarmId(farmId);
         setSensorFormData({
             sensorName: sensor.sensorName || '',
-            firebaseNodeId: sensor.firebaseNodeId || '',
+            sensorNodeId: sensor.sensorNodeId || '',
             installationDate: sensor.installationDate || '',
             notes: sensor.notes || '',
         });
@@ -179,7 +179,7 @@ export default function FarmMap() {
             // Edit existing sensor
             updatedSensors = (farm.sensors || []).map(s =>
                 s.id === editingSensorId
-                    ? { ...s, sensorName: sensorFormData.sensorName, notes: sensorFormData.notes, installationDate: sensorFormData.installationDate, firebaseNodeId: sensorFormData.firebaseNodeId }
+                    ? { ...s, sensorName: sensorFormData.sensorName, notes: sensorFormData.notes, installationDate: sensorFormData.installationDate, sensorNodeId: sensorFormData.sensorNodeId }
                     : s
             );
         } else {
@@ -760,7 +760,7 @@ export default function FarmMap() {
                                                         <div className="space-y-2 pt-1">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sensors</p>
                                                             {farmSensors.map(s => {
-                                                                const r = s.firebaseNodeId ? sensorReadings[s.firebaseNodeId] : null;
+                                                                const r = s.sensorNodeId ? sensorReadings[s.sensorNodeId] : null;
                                                                 return (
                                                                     <div key={s.id} className="px-3 py-2.5 bg-white rounded-xl border border-slate-100 shadow-sm">
                                                                         <div className="flex items-center justify-between">
@@ -770,7 +770,7 @@ export default function FarmMap() {
                                                                                 </div>
                                                                                 <div>
                                                                                     <p className="text-xs font-bold text-slate-900">{s.sensorName || 'Unnamed'}</p>
-                                                                                    {s.firebaseNodeId && <p className="text-[9px] text-slate-400">Node: {s.firebaseNodeId}</p>}
+                                                                                    {s.sensorNodeId && <p className="text-[9px] text-slate-400">Node: {s.sensorNodeId}</p>}
                                                                                 </div>
                                                                             </div>
                                                                             <div className="flex items-center gap-1">
@@ -790,7 +790,7 @@ export default function FarmMap() {
                                                                                 </button>
                                                                             </div>
                                                                         </div>
-                                                                        {/* Live readings from Firebase RTDB */}
+                                                                        {/* Live readings */}
                                                                         {r ? (
                                                                             <div className="mt-2 ml-11 flex flex-wrap gap-1.5">
                                                                                 {r.temperature != null && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 text-[10px] font-bold">🌡 {r.temperature}°C</span>}
@@ -799,7 +799,7 @@ export default function FarmMap() {
                                                                                 {r.phosphorous != null && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold">P {r.phosphorous}</span>}
                                                                                 {r.potassium != null && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-[10px] font-bold">K {r.potassium}</span>}
                                                                             </div>
-                                                                        ) : s.firebaseNodeId ? (
+                                                                        ) : s.sensorNodeId ? (
                                                                             <p className="mt-1.5 ml-11 text-[10px] text-slate-400 italic">Waiting for sensor data...</p>
                                                                         ) : null}
                                                                         <div className="mt-1.5 ml-11 space-y-0.5">
@@ -1178,10 +1178,10 @@ export default function FarmMap() {
                                             placeholder="e.g. Field Sensor 1" className="w-full px-4 py-3 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-violet-500/20 focus:bg-white transition-all outline-none font-medium text-sm text-slate-900 placeholder:text-slate-300" />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1 mb-1 block">Firebase Node ID</label>
-                                        <input type="text" value={sensorFormData.firebaseNodeId} onChange={e => setSensorFormData(p => ({ ...p, firebaseNodeId: e.target.value }))}
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1 mb-1 block">Sensor Node ID</label>
+                                        <input type="text" value={sensorFormData.sensorNodeId} onChange={e => setSensorFormData(p => ({ ...p, sensorNodeId: e.target.value }))}
                                             placeholder="e.g. sensor_001" className="w-full px-4 py-3 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-violet-500/20 focus:bg-white transition-all outline-none font-medium text-sm text-slate-900 placeholder:text-slate-300" />
-                                        <p className="text-[10px] text-slate-400 mt-1 pl-1">The RTDB path where ESP8266 sends readings (sensors/&lt;this-id&gt;)</p>
+                                        <p className="text-[10px] text-slate-400 mt-1 pl-1">The ID used by the sensor hardware</p>
                                     </div>
                                 </div>
                             </div>
