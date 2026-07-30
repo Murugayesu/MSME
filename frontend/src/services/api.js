@@ -1,7 +1,14 @@
 // API Service for communicating with FastAPI backend
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const FLASK_ML_URL = import.meta.env.VITE_FLASK_URL || 'http://localhost:5001';
+// Production URLs – used when env vars are not injected (e.g. Vercel build cache issues)
+const PROD_API_URL = 'https://msme-fastapi-service.onrender.com';
+const PROD_FLASK_URL = 'https://msme-ml-service-3e4h.onrender.com';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  || (import.meta.env.DEV ? 'http://localhost:8000' : PROD_API_URL);
+
+const FLASK_ML_URL = import.meta.env.VITE_FLASK_URL
+  || (import.meta.env.DEV ? 'http://localhost:5001' : PROD_FLASK_URL);
 
 // Save farm area to backend
 export const saveFarmArea = async (areaData) => {
