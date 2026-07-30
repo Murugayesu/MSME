@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: msme-ml-service
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn flask_ml_service.app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+
+  - type: web
+    name: msme-fastapi-service
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn fastapi_app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: FLASK_ML_URL
+        fromService:
+          type: web
+          name: msme-ml-service
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: FRONTEND_URL
+        value: "https://your-vercel-app-url.vercel.app" # User needs to update this later in dashboard

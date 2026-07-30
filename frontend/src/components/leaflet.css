@@ -1,0 +1,89 @@
+/* Leaflet Draw Fix - Import this in your main CSS or component */
+
+/* Ensure proper z-index hierarchy */
+.leaflet-container {
+    z-index: 0 !important;
+    position: relative;
+}
+
+/* Do NOT override .leaflet-pane z-index — Leaflet uses specific
+   z-indexes on each pane (tile-pane, overlay-pane, marker-pane, etc.)
+   and setting them all to "auto" breaks the stacking order. */
+
+/* Draw controls must be on top */
+.leaflet-draw-section,
+.leaflet-draw-toolbar,
+.leaflet-draw-toolbar-top {
+    z-index: 1001 !important;
+}
+
+.leaflet-draw-actions {
+    z-index: 1002 !important;
+}
+
+/* Ensure drawing cursor shows */
+.leaflet-container.leaflet-draw-draw-polygon {
+    cursor: crosshair !important;
+}
+
+.leaflet-draw-tooltip {
+    z-index: 1003 !important;
+}
+
+/* Make sure map clicks work during drawing */
+.leaflet-interactive {
+    pointer-events: auto !important;
+}
+
+/* Fix for overlapping UI elements */
+.leaflet-control-layers {
+    z-index: 800 !important;
+}
+
+/* Custom fix for floating panels over map */
+.map-floating-panel {
+    pointer-events: none !important;
+}
+
+.map-floating-panel>* {
+    pointer-events: auto !important;
+}
+
+/* Vertex handles during polygon drawing — keep fully visible so the
+   user can see where they clicked and can click the first vertex to
+   close the shape. */
+.leaflet-marker-icon.leaflet-div-icon.leaflet-editing-icon {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* Drawing guide lines */
+.leaflet-draw-guide-dash {
+    pointer-events: none !important;
+}
+
+/* Make sure the currently drawn shape is clickable */
+.leaflet-clickable {
+    pointer-events: auto !important;
+}
+
+/* Custom crosshair mode for sensor placement */
+.cursor-crosshair-mode {
+    cursor: crosshair !important;
+}
+
+@keyframes scale-up {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-scale-up {
+    animation: scale-up 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}

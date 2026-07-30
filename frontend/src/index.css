@@ -1,0 +1,87 @@
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet-draw/dist/leaflet.draw.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  }
+}
+
+@layer components {
+
+  /* Premium Glassmorphism Cards */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-200/50 rounded-3xl;
+  }
+
+  .glass-card-dark {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 shadow-2xl rounded-3xl text-white;
+  }
+
+  /* Glassmorphism Button */
+  .btn-primary {
+    @apply bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-2xl font-semibold shadow-lg shadow-green-200 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-6 py-2.5 rounded-2xl font-semibold transition-all duration-300 shadow-sm;
+  }
+
+  .glass-button {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-4 py-2 rounded-2xl transition-all duration-300;
+  }
+
+  /* Agri Green Gradient */
+  .agri-gradient {
+    @apply bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-700 font-bold;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+}
+
+/* Leaflet map fixes */
+.leaflet-container {
+  z-index: 0;
+  @apply rounded-3xl overflow-hidden shadow-inner;
+}
+
+.leaflet-draw-toolbar a {
+  @apply bg-white border-slate-200;
+}

@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+gunicorn
+python-multipart
+firebase-admin
+flask
+flask-cors
+numpy
+pandas
+scikit-learn
+tensorflow
+keras
+pillow
+requests
+python-dotenv
+opencv-python-headless
