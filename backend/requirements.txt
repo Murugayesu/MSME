@@ -7,7 +7,7 @@ flask-cors
 numpy
 pandas
 scikit-learn
-tensorflow
+tensorflow-cpu
 keras
 pillow
 requests
