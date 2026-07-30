@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 import { useAuth } from '../context/AuthContext';
 
 import { User, MapPin, Scale, Sprout, Save, Edit2, LogOut, Loader2, Mail, Phone, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
@@ -32,7 +35,7 @@ export default function Profile() {
     const fetchProfile = async () => {
         try {
             const token = await currentUser.getIdToken();
-            const response = await fetch('http://localhost:8000/api/profile/me', {
+            const response = await fetch(`${API_BASE_URL}/api/profile/me`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -65,7 +68,7 @@ export default function Profile() {
         setSaving(true);
         try {
             const token = await currentUser.getIdToken();
-            const response = await fetch('http://localhost:8000/api/profile/update', {
+            const response = await fetch(`${API_BASE_URL}/api/profile/update`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

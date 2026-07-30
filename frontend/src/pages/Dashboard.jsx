@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 import { useAuth } from '../context/AuthContext';
 import MapSelector from '../components/MapSelector';
 import DroneSimulator from '../components/DroneSimulator';
@@ -57,7 +60,7 @@ export default function Dashboard() {
     const fetchFarms = async () => {
         try {
             const token = await currentUser?.getIdToken();
-            const farmsRes = await fetch('http://localhost:8000/api/farms', {
+            const farmsRes = await fetch(`${API_BASE_URL}/api/farms`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (farmsRes.ok) {
@@ -79,7 +82,7 @@ export default function Dashboard() {
             const farmParam = selectedFarmId ? `?farm_id=${selectedFarmId}` : '';
 
             // Fetch current stats
-            const sensorRes = await fetch(`http://localhost:8000/api/sensors${farmParam}`, {
+            const sensorRes = await fetch(`${API_BASE_URL}/api/sensors${farmParam}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (sensorRes.ok) {
@@ -88,7 +91,7 @@ export default function Dashboard() {
             }
 
             // Fetch history for chart
-            const historyRes = await fetch(`http://localhost:8000/api/sensor-history${farmParam}`, {
+            const historyRes = await fetch(`${API_BASE_URL}/api/sensor-history${farmParam}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (historyRes.ok) {

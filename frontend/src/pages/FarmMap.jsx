@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 import { useAuth } from '../context/AuthContext';
 import MapSelector from '../components/MapSelector';
 import DroneSimulator from '../components/DroneSimulator';
@@ -99,7 +102,7 @@ export default function FarmMap() {
     const fetchSavedFarms = async () => {
         try {
             const token = await currentUser?.getIdToken();
-            const response = await fetch('http://localhost:8000/api/farms', {
+            const response = await fetch(`${API_BASE_URL}/api/farms`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -120,7 +123,7 @@ export default function FarmMap() {
             setSavingField(true);
             try {
                 const token = await currentUser?.getIdToken();
-                const response = await fetch('http://localhost:8000/api/area', {
+                const response = await fetch(`${API_BASE_URL}/api/area`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -194,7 +197,7 @@ export default function FarmMap() {
 
         try {
             const token = await currentUser?.getIdToken();
-            const res = await fetch(`http://localhost:8000/api/farms/${farm.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/farms/${farm.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ farmName: farm.farm_name, areas: farm.areas, sensors: updatedSensors }),
@@ -214,7 +217,7 @@ export default function FarmMap() {
         const updatedSensors = (farm.sensors || []).filter(s => s.id !== sensorId);
         try {
             const token = await currentUser?.getIdToken();
-            const res = await fetch(`http://localhost:8000/api/farms/${farm.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/farms/${farm.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ farmName: farm.farm_name, areas: farm.areas, sensors: updatedSensors }),
@@ -254,7 +257,7 @@ export default function FarmMap() {
             formData.append('interval_sec', '5');
 
             setVideoProgress('Extracting frames & running AI analysis...');
-            const response = await fetch('http://localhost:8000/api/upload-video', {
+            const response = await fetch(`${API_BASE_URL}/api/upload-video`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData,
@@ -302,7 +305,7 @@ export default function FarmMap() {
         if (!window.confirm('Delete this farm permanently?')) return;
         try {
             const token = await currentUser?.getIdToken();
-            const res = await fetch(`http://localhost:8000/api/farms/${farmId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/farms/${farmId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -345,7 +348,7 @@ export default function FarmMap() {
         if (!editingFarm) return;
         try {
             const token = await currentUser?.getIdToken();
-            const res = await fetch(`http://localhost:8000/api/farms/${editingFarm.id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/farms/${editingFarm.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -395,7 +398,7 @@ export default function FarmMap() {
     const handleScanComplete = async (image) => {
         setIsScanning(false);
         try {
-            const response = await fetch('http://localhost:8000/api/predict', {
+            const response = await fetch(`${API_BASE_URL}/api/predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
