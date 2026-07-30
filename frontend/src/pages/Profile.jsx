@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { User, MapPin, Scale, Sprout, Save, Edit2, LogOut, Loader2, Mail, Phone, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL
     || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
-import { useAuth } from '../context/AuthContext';
 
-import { User, MapPin, Scale, Sprout, Save, Edit2, LogOut, Loader2, Mail, Phone, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function Profile() {
     const { currentUser, logout } = useAuth();

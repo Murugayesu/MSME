@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL
-    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 import { useAuth } from '../context/AuthContext';
+
 import MapSelector from '../components/MapSelector';
 import DroneSimulator from '../components/DroneSimulator';
 import PredictionResult from '../components/PredictionResult';
@@ -34,6 +32,9 @@ import {
     Cpu,
     X
 } from 'lucide-react';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 
 export default function FarmMap() {
     const { currentUser } = useAuth();

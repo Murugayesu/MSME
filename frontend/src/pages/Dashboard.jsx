@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL
-    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 import { useAuth } from '../context/AuthContext';
+
 import MapSelector from '../components/MapSelector';
 import DroneSimulator from '../components/DroneSimulator';
 import PredictionResult from '../components/PredictionResult';
@@ -26,6 +24,9 @@ import {
     Tooltip,
     ResponsiveContainer
 } from 'recharts';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (import.meta.env.DEV ? 'http://localhost:8000' : 'https://msme-fastapi-service.onrender.com');
 
 const mockChartData = [
     { name: 'Mon', health: 50 },
